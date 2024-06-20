@@ -31,7 +31,7 @@ class VectorDBConnector(object):
         self.collection = chroma_client.get_or_create_collection(name=collection_name)  # 获取或者新建collection
         self.embedding_fn = embedding_fn
 
-    def add_document(self, documents):
+    def add_document(self, documents, filename):
         '''
         向collection中添加文档与向量
         :param documents: []
@@ -44,17 +44,15 @@ class VectorDBConnector(object):
         #     metadatas=metadatas,  # 元数据
         #     ids=ids  # 文档id
         # )
-        #
-        # 先查询，如果id不存在添加
 
-
+        # 优化的点
+        # 1、先查询，如果id不存在添加
+        # 2、文档分批次添加到向量数据库中
         metadatas = []
         ids = []
         for i, text in enumerate(text_list):
             metadatas.append({'filename': filename, 'text_len': len(text)})
             ids.append(f"{filename}_id{i}")
-
-
 
         # 增加或者更新，如果原来就有，就覆盖，原来没有的就添加
         self.collection.upsert(
@@ -64,7 +62,7 @@ class VectorDBConnector(object):
             ids=ids  # 文档id
         )
 
-    def search(self, query, top_n):
+    def search(self, query, top_n, filename):
         '''
         检索向量数据库
         :param query:
@@ -73,7 +71,8 @@ class VectorDBConnector(object):
         '''
         results = self.collection.query(
             query_embeddings=self.embedding_fn([query]),
-            n_results=top_n
+            n_results=top_n,
+            where={"filename": filename},
         )
         return results
 
@@ -89,11 +88,11 @@ if __name__ == '__main__':
 
     # 创建矢量数据库
     vec_db = VectorDBConnector("paper_collection", sents2embedding)
-    vec_db.add_document(text_list)
+    # vec_db.add_document(text_list, filename)
 
     # 查询
     user_query = "这篇文章使用的LSTM网络是几层？"
-    results = vec_db.search(user_query, 10)
+    results = vec_db.search(user_query, 10, filename)
     print("results", results)
     # res_text_list = results['documents'][0]
     #

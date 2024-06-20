@@ -10,25 +10,18 @@ from helper.read_pdf import read_pdf_ch_large
 from helper.rag import build_prompt, get_completion
 from helper.vecdb import VectorDBConnector
 from helper.embedding import sents2embedding
-
-def build_vecdb():
-
-
-
-    return
+from appconf import collection_name
 
 
 def test():
     # 1、读取pdf文档
     pdf_filepath = './data/基于LSTM和启发式搜索的遥感卫星地面站天线智能调度方法研究2020.pdf'  # 示例PDF文件路径
+    filename = os.path.basename(pdf_filepath)  # 提取文件名
     text_list = read_pdf_ch_large(pdf_filepath)  # 读取PDF文件中的文本
     print("text_list:", len(text_list))
 
-    # 提取文件名
-    filename = os.path.basename(pdf_filepath)
-
     # 2、建立矢量数据库
-    vec_db = VectorDBConnector(collection_name="paper_collection", embedding_fn=sents2embedding)
+    vec_db = VectorDBConnector(collection_name=collection_name, embedding_fn=sents2embedding)
     # vec_db.add_document(text_list)
 
     # 3、Prompt模版
@@ -50,7 +43,11 @@ def test():
     # user_query = "论文中使用的LSTM是一层的还是两层的？"
     # user_query = "这篇论文的作者是谁？"
     user_query = "这篇论文中作者致谢了哪些人？"
-    search_results = vec_db.search(user_query, 10)
+    search_results = vec_db.search(user_query, 10,
+                                   filename)  # ['ids', 'distances', 'metadatas', 'embeddings', 'documents', 'uris', 'data']
+    print("search_results:", search_results)
+    print("search_results keys", search_results.keys())
+
     res_text_list = search_results['documents'][0]
 
     # 5、根据Prompt模版生成Prompt

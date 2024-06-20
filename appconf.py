@@ -13,3 +13,6 @@ embedding_model_path = "/Users/sunwenjun/data/models_from_hf/BAAI/bge-large-zh-v
 
 # 向量数据库路径
 chromadb_path = "/Users/sunwenjun/data/chromadb_path"
+
+# collection name
+collection_name = "paper_collection"
