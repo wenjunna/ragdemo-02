@@ -2,13 +2,20 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2024/6/18 7:25 PM
 # @Author  : sunwenjun
-# @File    : test_vec.py
-# @brief: PyCharm
+# @File    : test.py
+# @brief: test
 
+import os
 from helper.read_pdf import read_pdf_ch_large
 from helper.rag import build_prompt, get_completion
 from helper.vecdb import VectorDBConnector
 from helper.embedding import sents2embedding
+
+def build_vecdb():
+
+
+
+    return
 
 
 def test():
@@ -17,9 +24,12 @@ def test():
     text_list = read_pdf_ch_large(pdf_filepath)  # 读取PDF文件中的文本
     print("text_list:", len(text_list))
 
-    # 2、建立适量数据库
-    vec_db = VectorDBConnector("vecdb", sents2embedding)
-    vec_db.add_document(text_list)
+    # 提取文件名
+    filename = os.path.basename(pdf_filepath)
+
+    # 2、建立矢量数据库
+    vec_db = VectorDBConnector(collection_name="paper_collection", embedding_fn=sents2embedding)
+    # vec_db.add_document(text_list)
 
     # 3、Prompt模版
     prompt_template = """
@@ -35,7 +45,11 @@ def test():
     print("prompt_template", prompt_template)
 
     # 4、检索
-    user_query = "LSTM网络是如何应用在地面站天线调度的？"
+    # user_query = "LSTM网络是如何应用在地面站天线调度的？"
+    # user_query = "论文中使用的LSTM是单向的还是双向的？"
+    # user_query = "论文中使用的LSTM是一层的还是两层的？"
+    # user_query = "这篇论文的作者是谁？"
+    user_query = "这篇论文中作者致谢了哪些人？"
     search_results = vec_db.search(user_query, 10)
     res_text_list = search_results['documents'][0]
 
