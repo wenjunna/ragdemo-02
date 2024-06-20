@@ -3,7 +3,7 @@
 # @Time    : 2024/6/12 10:48 PM
 # @Author  : sunwenjun
 # @File    : str_qj2bj.py
-# @brief: 全角转半角，包括中英文括号、全半角
+# @brief: 字符串预处理。全角转半角，包括中英文括号、全半角
 
 def strQJ2BJ(ustring):
     '''
@@ -55,7 +55,7 @@ def strQJ2BJ(ustring):
 
 
 def clean_norm(text):
-    # text = text.strip().lower()
+    text = text.strip().lower()
     text = strQJ2BJ(text)
     text = text.replace("（", "(") \
         .replace("[", "(") \

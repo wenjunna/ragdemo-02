@@ -3,12 +3,12 @@
 # @Time    : 2024/6/18 7:00 PM
 # @Author  : sunwenjun
 # @File    : vecdb.py
-# @brief: PyCharm
+# @brief: 向量数据库
 
 import chromadb
 from chromadb.config import Settings
-from helper.simcse_embedding import get_embedding
-from helper.read_pdf import read_pdf
+from helper.read_pdf import read_pdf_ch_large
+from helper.embedding import sents2embedding
 
 
 class VectorDBConnector(object):
@@ -49,17 +49,16 @@ class VectorDBConnector(object):
 
 
 if __name__ == '__main__':
-    # pdf_filepath = '../data/孙文军-NLP算法岗-4年-3.pdf'  # 示例PDF文件路径
     pdf_filepath = '../data/基于LSTM和启发式搜索的遥感卫星地面站天线智能调度方法研究2020.pdf'  # 示例PDF文件路径
-    pdf_text = read_pdf(pdf_filepath, min_line_length=5)  # 读取PDF文件中的文本
+    pdf_text = read_pdf_ch_large(pdf_filepath)  # 读取PDF文件中的文本
     print("pdf_text:", len(pdf_text))
 
-    vec_db = VectorDBConnector("demo", get_embedding)
+    vec_db = VectorDBConnector("vecdb", sents2embedding)
     vec_db.add_document(pdf_text)
 
-    # user_query = "孙文军是那一年出生的？"
     user_query = "这篇文章使用的LSTM网络是几层？"
-    results = vec_db.search(user_query, 5)
+    results = vec_db.search(user_query, 10)
+    res_text_list = results['documents'][0]
 
-    for para in results['documents'][0]:
+    for para in res_text_list:
         print(para + "\n")
